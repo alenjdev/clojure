@@ -20,14 +20,17 @@
 (defn is-valid-ret-fuente
   [ret-value]
   (= ret-value 1))
+(defn eval-invalid-condition
+  [condition-one condition-two]
+  (and condition-one condition-two))
 
 (defn is-valid-invoice
   [item]
-  (if (= true (= true (is-valid-tax-rate (get-tax-rate item)))
-         (= true  (is-valid-ret-fuente (get-ret-fuente item))))
-    false
-    (or (is-valid-tax-rate (get-tax-rate item))
-        (is-valid-ret-fuente (get-ret-fuente item)))))
+  (let [is-current-tax-rate-valid (is-valid-tax-rate (get-tax-rate item))]
+    (let [is-current-ret-fuente-valid (is-valid-ret-fuente (get-ret-fuente item))]
+      (if (eval-invalid-condition is-current-ret-fuente-valid is-current-tax-rate-valid)
+        false
+        (or is-current-ret-fuente-valid is-current-tax-rate-valid)))))
 
 (defn get-valid-invoices
   [{invoices :invoice/items}]
